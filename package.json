@@ -4,7 +4,7 @@
   "description": "Association between a Javascript Proxy and a kind of pubsub pattern",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node example.js"
   },
   "repository": {
     "type": "git",

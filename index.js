@@ -1,3 +1,5 @@
+
+function isComplex(value) { return typeof value === 'object' };
 class CustomProxy {
     constructor(target, parentProxPub = null) {
         this._proxies_ = new Map();
@@ -34,16 +36,21 @@ class CustomProxy {
     _set_(newValue) {
         this._value_ = newValue;
         this._publish_();
+        if (!isComplex(this._value_)) return;
         let keys = this._proxies_.keys();
         let key = null;
         Array.from(this._proxies_.keys()).forEach((key) => {
             if (!this._value_[key]) {
                 this._proxies_.delete(key);
             }
-            else {
-                this._proxies_.get(key)._set_(this._value_[key]);
-            }
         })
+        
+        for (let key in this._value_){
+            let v = this._value_[key];
+            if (!this._proxies_.has(key)) { this._proxies_.set(key, new Publisher(isComplex(v) ? v : { __value: v }, this)); }
+            this._proxies_.get(key)._set_(this._value_[key]);
+            this._publishAll_(key, this._value_[key]);
+        }
     }
     get() {
         if (this._value_.__value) return this._value_.__value;
@@ -55,7 +62,6 @@ class Publisher extends CustomProxy {
     constructor(target, parentProxPub = null) {
         super(target, parentProxPub);
         let that = this;
-        function isComplex(value) { return typeof value === 'object' };
         return new Proxy(
             this,
             {
