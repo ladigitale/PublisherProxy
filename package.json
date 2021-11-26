@@ -1,6 +1,6 @@
 {
   "name": "publisherproxy",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Association between a Javascript Proxy and a kind of pubsub pattern",
   "main": "index.js",
   "scripts": {
