@@ -1,0 +1,21 @@
+{
+  "name": "publisherproxy",
+  "version": "1.0.0",
+  "description": "Association between a Javascript Proxy and a kind of pubsub pattern",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com//ladigitale/PublisherProxy.git"
+  },
+  "keywords": [
+    "Proxy",
+    "pubsub",
+    "observable",
+    "eventdispatcher"
+  ],
+  "author": "Julien BEAUFILS",
+  "license": "MIT"
+}
