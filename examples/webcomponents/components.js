@@ -5,13 +5,7 @@
 */
 //const Publisher = require("publisherproxy"); // use it with yarn or NPM
 import Publisher from "./publisher.js";// this is a copy of index.js
-function getAncestorAttributeValue(node, attributeName) {
-    while (!node.hasAttribute(attributeName) && node.parentElement)
-    {
-        node = node.parentElement;
-    }
-    return node.getAttribute(attributeName);
-}
+
 /*
     Singleton to access Publishers from any situation.
     Publishers are requested by id
@@ -60,6 +54,20 @@ class APIFetch extends HTMLElement{
     }
 }
 customElements.define("api-fetch", APIFetch);
+
+/*
+    A utility function too get attribute values from a node or one of its ancestors.
+    from parent to parent, the first node having an attibute named "attributeName" will stop search.
+    Then it returns the attribute value.
+*/
+function getAncestorAttributeValue(node, attributeName) {
+    while (!node.hasAttribute(attributeName) && node.parentElement) {
+        node = node.parentElement;
+    }
+    return node.getAttribute(attributeName);
+}
+
+
 /*
     Web Component that change filter data based on its name
 */
