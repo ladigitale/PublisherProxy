@@ -92,7 +92,7 @@ class CustomProxy {
     }
 
 }
-class Publisher extends CustomProxy {
+export default class Publisher extends CustomProxy {
     constructor(target, parentProxPub = null) {
         super(target, parentProxPub);
         let that = this;

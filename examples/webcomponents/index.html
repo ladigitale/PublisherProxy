@@ -1,0 +1,12 @@
+<html>
+    <head>
+        <title>Public APIS</title>
+        <script type="module" src="components.js"></script>
+    </head>
+    <body>
+        <api-fetch api-id="data" filters-id="filters" src="https://api.publicapis.org/entries">
+            <input type="text" is="api-input" name="title"></input>
+            <api-result></api-result>
+        </api-fetch> 
+    </body>
+</html>
