@@ -1,6 +1,9 @@
 
 //@ts-check
-//const Publisher = require("publisherproxy");
+/*
+    This example work need a proper server in order to work
+*/
+//const Publisher = require("publisherproxy"); // use it with yarn or NPM
 import Publisher from "./publisher.js";// this is a copy of index.js
 function getAncestorAttributeValue(node, attributeName) {
     while (!node.hasAttribute(attributeName) && node.parentElement)
@@ -9,6 +12,10 @@ function getAncestorAttributeValue(node, attributeName) {
     }
     return node.getAttribute(attributeName);
 }
+/*
+    Singleton to access Publishers from any situation.
+    Publishers are requested by id
+*/
 class Data{
     static instance = null;
     
@@ -27,6 +34,12 @@ class Data{
         return this.publishers.get(id);
     }
 }
+/*
+    WebComponents that fetchs data at every filter (publisher) internalMutation;
+    Then it feds it into another publisher;
+    Inputs and Results must be written in this component.
+    see ./index.html for usage
+*/
 class APIFetch extends HTMLElement{
     constructor() { super();}
     connectedCallback() {
@@ -47,6 +60,9 @@ class APIFetch extends HTMLElement{
     }
 }
 customElements.define("api-fetch", APIFetch);
+/*
+    Web Component that change filter data based on its name
+*/
 class APIInput extends HTMLInputElement {
     connectedCallback() {
         this.addEventListener("keyup", (e)=>this.onInput())
@@ -58,6 +74,10 @@ class APIInput extends HTMLInputElement {
     }
 }
 customElements.define("api-input", APIInput, { extends: 'input' });
+
+/*
+    Web Component that change its content data based Data fetched by the api
+*/
 class APIResult extends HTMLElement{
     connectedCallback() {
         this.style.display = "block";
