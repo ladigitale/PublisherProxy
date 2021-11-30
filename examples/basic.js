@@ -1,17 +1,17 @@
 //if imported from npm
 //const Publisher = require("publisherproxy");
 const Publisher = require("../index.js");
-let state = {
+const state = {
     title: "News",
     items: [
         { title: "1th", text: "First news" },
         { title: "2nd", text: "Second news" }
     ]
 }
-let publisher = new Publisher(state);
-let fillable = {};
-let fillableTemplate = { title: "A title to be replaced"};
-let secondNews = [];
+const publisher = new Publisher(state);
+const fillable = {};
+const fillableTemplate = { title: "A title to be replaced"};
+const secondNews = [];
 publisher.onInternalMutation(() => console.log("something mutated inside, maybe it's time to save"));
 publisher.startDynamicFilling(fillable);
 publisher.startTemplateFilling(fillableTemplate);
