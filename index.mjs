@@ -191,4 +191,4 @@ export default class Publisher extends CustomProxy {
     }
 
 }
- if(typeof module !="undefined") module.exports = Publisher;
+if (typeof module != "undefined") module.exports = { Publisher: Publisher, PublisherManager: PublisherManager };
