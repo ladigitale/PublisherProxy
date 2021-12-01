@@ -1,7 +1,7 @@
 # PublisherProxy
 Association between a Javascript Proxy and a kind of pubsub pattern
 
-#### WARNING !!   not used in production at the time of writing
+#### WARNING !!   Not used in production at the time of writing
 
 ## Installation
 
@@ -58,7 +58,6 @@ The object is a real-time copy of the state.
 ### Template filling 
 
 Identical to the dynamic filling. However, only existing attributes are updated.
-This is interesting to use with webComponents with getters setters for example.
 
 ```javascript
 const fillableTemplate = { title: "A title to be replaced"};
@@ -88,4 +87,4 @@ publisher.items = [
 
 ## Examples
 
-Please look at the examples for a more in death view.
+Please look at the examples for a more in depth view.
