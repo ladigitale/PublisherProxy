@@ -2,7 +2,8 @@
   "name": "publisherproxy",
   "version": "2.0.1",
   "description": "Association between a Javascript Proxy and a kind of pubsub pattern",
-  "main": "index.js",
+  "main": "dist/publisher-proxy.js",
+  "type":"commonjs",
   "scripts": {
     "test": "node examples/basic.js"
   },
@@ -17,5 +18,8 @@
     "eventdispatcher"
   ],
   "author": "Julien BEAUFILS",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "laravel-mix": "^6.0.39"
+  }
 }

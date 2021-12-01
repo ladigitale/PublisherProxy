@@ -1,6 +1,8 @@
 //if imported from npm
 //const Publisher = require("publisherproxy");
-const Publisher = require("../index.js");
+ const Publisher = require("../dist/publisher-proxy.js");
+
+console.log(Publisher);
 const state = {
     title: "News",
     items: [

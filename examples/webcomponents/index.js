@@ -92,6 +92,25 @@ class CustomProxy {
     }
 
 }
+
+export class PublisherManager {
+    static instance = null;
+
+    constructor() {
+        if (PublisherManager.instance != null) throw "Singleton / use getInstance";
+        PublisherManager.instance = this;
+        this.publishers = new Map();
+    }
+    static getInstance(channel) {
+        if (PublisherManager.instance == null) return new PublisherManager();
+        return PublisherManager.instance;
+    }
+    get(id) {
+        if (!this.publishers.has(id)) this.publishers.set(id, new Publisher({}));
+        return this.publishers.get(id);
+    }
+}
+
 export default class Publisher extends CustomProxy {
     constructor(target, parentProxPub = null) {
         super(target, parentProxPub);
@@ -172,4 +191,4 @@ export default class Publisher extends CustomProxy {
     }
 
 }
-if(typeof module !="undefined") module.exports = Publisher;
+ if(typeof module !="undefined") module.exports = Publisher;

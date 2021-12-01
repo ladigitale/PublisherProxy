@@ -4,30 +4,13 @@
     This example work need a proper server in order to work
 */
 //const Publisher = require("publisherproxy"); // use it with yarn or NPM
-import Publisher from "./publisher.js";// this is a copy of index.js
+import {PublisherManager} from "./index.js";// this is a copy of index.js
 
 /*
     Singleton to access Publishers from any situation.
     Publishers are requested by id
 */
-class Data{
-    static instance = null;
-    
-    constructor() {
-        if (Data.instance != null) throw "Singleton / use getInstance";
-        Data.instance = this;
-        this.publishers = new Map();
-    }
-    static getInstance(channel) {
-        if (Data.instance == null) return new Data();
-        return Data.instance;
-    }
-    getPublisher(id)
-    {
-        if (!this.publishers.has(id)) this.publishers.set(id, new Publisher({}));
-        return this.publishers.get(id);
-    }
-}
+
 /*
     WebComponents that fetchs data at every filter (publisher) internalMutation;
     Then it feds it into another publisher;
@@ -37,10 +20,10 @@ class Data{
 class APIFetch extends HTMLElement{
     constructor() { super();}
     connectedCallback() {
-        const data = Data.getInstance();
-        this.api = data.getPublisher(this.getAttribute("api-id"));
+        const mng = PublisherManager.getInstance();
+        this.api = mng.get(this.getAttribute("api-id"));
         this.src = this.getAttribute("src");
-        this.filters = data.getPublisher(this.getAttribute("filters-id"));
+        this.filters = mng.get(this.getAttribute("filters-id"));
         this.filtersData = {};
         this.filters.onInternalMutation(() => this.refreshData());
         this.filters.startDynamicFilling(this.filtersData);
@@ -76,22 +59,22 @@ class APIInput extends HTMLInputElement {
         this.addEventListener("keyup", (e)=>this.onInput())
     }
     onInput() {
-        const data = Data.getInstance();
-        const filters = data.getPublisher(getAncestorAttributeValue(this, "filters-id"));
+        const mng = PublisherManager.getInstance();
+        const filters = mng.get(getAncestorAttributeValue(this, "filters-id"));
         filters[this.name] = this.value;
     }
 }
 customElements.define("api-input", APIInput, { extends: 'input' });
 
 /*
-    Web Component that change its content data based Data fetched by the api
+    Web Component that change its content data based PublisherManager fetched by the api
 */
 class APIResult extends HTMLElement{
     connectedCallback() {
         this.style.display = "block";
         this.style.whiteSpace = "pre";
-        const data = Data.getInstance();
-        this.api = data.getPublisher(getAncestorAttributeValue(this, "api-id"));
+        const mng = PublisherManager.getInstance();
+        this.api = mng.get(getAncestorAttributeValue(this, "api-id"));
         this.api.onAssign(() => this.innerHTML = JSON.stringify(this.api.get(), null, "    "));
     }
 }
