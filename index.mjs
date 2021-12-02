@@ -29,7 +29,7 @@ class CustomProxy {
         this._fillListeners_.forEach(handler => handler[key] = value);
     }
     _publishTemplateFilling_(key, value) {
-        this._templateFillListeners_.forEach(handler => { if (handler.hasOwnProperty(key)) handler[key] = value;});
+        this._templateFillListeners_.forEach(handler => { if (typeof (handler[key]) !=  "undefined") handler[key] = value;});
     }
     onAssign(handler) {
         if (typeof handler != "function") return;
