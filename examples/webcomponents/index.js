@@ -1,5 +1,5 @@
 
-function isComplex(value) { return typeof value === 'object' };
+function isComplex(value) { return typeof value === 'object' && value != null};
 class CustomProxy {
     constructor(target, parentProxPub = null) {
         this._proxies_ = new Map();
@@ -64,6 +64,7 @@ class CustomProxy {
         this._fillListeners_.delete(handler);
     }
     set(newValue) {
+        console.log(newValue);
         this._value_ = newValue;
         if (this._value_.hasOwnProperty("__value"))
         {
