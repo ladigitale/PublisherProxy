@@ -1,5 +1,5 @@
 
-function isComplex(value) { return typeof value === 'object' && value != null};
+function isComplex(value) { return typeof value === 'object' && value != null };
 class CustomProxy {
     constructor(target, parentProxPub = null) {
         this._proxies_ = new Map();
@@ -27,9 +27,15 @@ class CustomProxy {
     }
     _publishDynamicFilling_(key, value) {
         this._fillListeners_.forEach(handler => handler[key] = value);
+        this._publishTemplateFilling_(key, value);
+
     }
     _publishTemplateFilling_(key, value) {
-        this._templateFillListeners_.forEach(handler => { if (handler.hasOwnProperty(key)) handler[key] = value;});
+        this._templateFillListeners_.forEach(handler => {
+            if (typeof (handler[key]) != "undefined") {
+                handler[key] = value;
+            }
+        });
     }
     onAssign(handler) {
         if (typeof handler != "function") return;
@@ -64,7 +70,6 @@ class CustomProxy {
         this._fillListeners_.delete(handler);
     }
     set(newValue) {
-        console.log(newValue);
         this._value_ = newValue;
         if (this._value_.hasOwnProperty("__value"))
         {
