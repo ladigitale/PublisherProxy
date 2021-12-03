@@ -2,6 +2,19 @@
 //const Publisher = require("publisherproxy");
 const { Publisher } = require("../dist/publisher-proxy.js");
 
+class TemplateTest {
+    constructor() {
+        this._title = "...";
+    }
+    get title() {
+        return this._title;
+    }
+    set title(value) {
+        this._title = value;
+        return value;
+    }
+}
+
 console.log(Publisher);
 const state = {
     title: "News",
@@ -12,12 +25,12 @@ const state = {
 }
 const publisher = new Publisher(state);
 const fillable = {};
-const fillableTemplate = { title: "A title to be replaced"};
+const fillableTemplate = new TemplateTest();//{ title: "A title to be replaced"};
 const secondNews = [];
 publisher.onInternalMutation(() => console.log("something mutated inside, maybe it's time to save"));
 publisher.startDynamicFilling(fillable);
 publisher.startTemplateFilling(fillableTemplate);
-publisher.items[1].startDynamicFilling(secondNews);
+publisher.title = "Good morning";
 publisher.items[1].text.onAssign((value) => console.log("second news new text : " + value));
 publisher.items[1].text = "Second news Modified";
 publisher.items = [
