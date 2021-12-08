@@ -37,8 +37,8 @@ publisher.items = [
     { title: "Ah Ah", text: "Welcome" },
     { title: "Hello", text: "World" }
 ]
-Object.keys(publisher);
 console.log("state", state);
 console.log("fillable", fillable);
 console.log("fillableTemplate", fillableTemplate);
 console.log("secondNews", secondNews);
+console.log(Object.keys(publisher));

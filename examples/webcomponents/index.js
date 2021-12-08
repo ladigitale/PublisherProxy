@@ -173,9 +173,6 @@ export default class Publisher extends CustomProxy {
                 "enumerate": function (oTarget, sKey) {
                     return target.keys();
                 },
-                "ownKeys": function (oTarget, sKey) {
-                    return target.keys();
-                },
                 "has": function (oTarget, sKey) {
                     return sKey in target;
                 },
@@ -185,15 +182,14 @@ export default class Publisher extends CustomProxy {
                 },
                 "getOwnPropertyDescriptor": function (oTarget, sKey) {
                     var vValue = target[sKey];
-                    return vValue ? {
-                        "value": vValue,
-                        "writable": true,
-                        "enumerable": true,
-                        "configurable": false
-                    } : undefined;
+                    return {
+                        enumerable: true,
+                        configurable: true,
+                    };
                 },
-                "ownKeys":function(target) {
-                    return Object.keys(target);
+                "ownKeys": function (target) {
+                    if (that._value_.__value) return Object.keys(this._value_.__value);
+                    return Object.keys(that._value_);
                 },
             }
         );
