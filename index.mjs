@@ -191,10 +191,14 @@ export default class Publisher extends CustomProxy {
                         "enumerable": true,
                         "configurable": false
                     } : undefined;
-                }
+                },
+                "ownKeys":function(target) {
+                    return Object.keys(target);
+                },
             }
         );
     }
 
 }
+
 if (typeof module != "undefined") module.exports = { Publisher: Publisher, PublisherManager: PublisherManager };
