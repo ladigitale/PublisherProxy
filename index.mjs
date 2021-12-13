@@ -8,6 +8,7 @@ class CustomProxy {
         this._mutationListeners_ = new Set();
         this._fillListeners_ = new Set();
         this._templateFillListeners_ = new Set();
+        this._lockInternalMutationPublishing_ = false;
         this.parent = parentProxPub;
         this.root = this;
         while (this.root.parent) {
@@ -16,6 +17,7 @@ class CustomProxy {
     }
     _publishInternalMutation_() {
 
+        if (this._lockInternalMutationPublishing_) return;
         this._mutationListeners_.forEach(handler => handler());
         if (this.parent) {
             this.parent._publishInternalMutation_();
@@ -75,9 +77,8 @@ class CustomProxy {
         {
             this._publishAssignement_();
             return true;
-        }    
-        let keys = this._proxies_.keys();
-        let key = null;
+        }
+        this._lockInternalMutationPublishing_ = true;
         Array.from(this._proxies_.keys()).forEach((key) => {
             if (!this._value_[key]) {
                 this._proxies_.delete(key);
@@ -89,6 +90,8 @@ class CustomProxy {
             this._proxies_.get(key).set(isComplex(v) ? v : { __value: v });
             this._publishDynamicFilling_(key, this._value_[key]);
         }
+
+        this._lockInternalMutationPublishing_ = false;
         this._publishAssignement_();
         return true;
     }
@@ -145,7 +148,8 @@ export default class Publisher extends CustomProxy {
                         "_publishAssignement_", 
                         "_proxies_",
                         "parent",
-                        "_value_"
+                        "_value_",
+                        "_lockInternalMutationPublishing_"
                     ].includes(sKey)) return that[sKey];
                     if (!that._proxies_.has(sKey)) {
                         let vValue = target[sKey];
@@ -158,7 +162,10 @@ export default class Publisher extends CustomProxy {
                         oTarget._value_ = vValue;
                         return oTarget._value_;
                     }
-                    if (!that._proxies_.has(sKey)) { that._proxies_.set(sKey, new Publisher(isComplex(vValue) ? vValue : { __value: vValue }, that)); }
+                    const isValueComplex = isComplex(vValue);
+
+                    if (!that._proxies_.has(sKey)) { that._proxies_.set(sKey, new Publisher(isValueComplex ? vValue : { __value: vValue }, that)); }
+                    if (target[sKey] == vValue && isValueComplex) return;
                     target[sKey] = vValue;
                     that._publishDynamicFilling_(sKey, vValue);
                     that._proxies_.get(sKey).set(isComplex(vValue) ? vValue : { __value: vValue });

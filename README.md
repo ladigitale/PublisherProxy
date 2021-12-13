@@ -26,8 +26,6 @@ const state = {
 const publisher = new Publisher(state);
 ```
 
-The publisher is a Javascript Proxy. This means that every modification on the publisher is reflected on the state.
-
 ### Be notified of any state change.
 
 This is used for example to trigger a save of the state for any change, or an api call if a filter has changed.

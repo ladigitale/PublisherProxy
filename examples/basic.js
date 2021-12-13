@@ -1,6 +1,6 @@
 //if imported from npm
 //const Publisher = require("publisherproxy");
-const { Publisher } = require("../dist/publisher-proxy.js");
+const { Publisher, PublisherManager } = require("../dist/publisher-proxy.js");
 
 class TemplateTest {
     constructor() {
@@ -15,7 +15,6 @@ class TemplateTest {
     }
 }
 
-console.log(Publisher);
 const state = {
     title: "News",
     items: [
@@ -23,13 +22,24 @@ const state = {
         { title: "2nd", text: "Second news" }
     ]
 }
-const publisher = new Publisher(state);
+const publisher = PublisherManager.getInstance().get("HEY");
+let dataPath = "items.0";
+let array = dataPath.split('.');
+
+const publisher2 = PublisherManager.getInstance().get("HEY");
+let pub = publisher2;
+for (let key of array) pub = pub[key];
+let v = new TemplateTest();
+pub.startTemplateFilling(v);
 const fillable = {};
 const fillableTemplate = new TemplateTest();//{ title: "A title to be replaced"};
 const secondNews = [];
 publisher.onInternalMutation(() => console.log("something mutated inside, maybe it's time to save"));
 publisher.startDynamicFilling(fillable);
 publisher.startTemplateFilling(fillableTemplate);
+
+publisher.set(state);
+console.log(v);
 publisher.title = "Good morning";
 publisher.items[1].text.onAssign((value) => console.log("second news new text : " + value));
 publisher.items[1].text = "Second news Modified";
