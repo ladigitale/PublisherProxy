@@ -33,12 +33,9 @@ let v = new TemplateTest();
 pub.startTemplateFilling(v);
 const fillable = {};
 const fillableTemplate = new TemplateTest();//{ title: "A title to be replaced"};
-const secondNews = [];
 publisher.onInternalMutation(() => console.log("something mutated inside, maybe it's time to save"));
 publisher.startDynamicFilling(fillable);
 publisher.startTemplateFilling(fillableTemplate);
-
-publisher.set(state);
 console.log(v);
 publisher.title = "Good morning";
 publisher.items[1].text.onAssign((value) => console.log("second news new text : " + value));
@@ -50,5 +47,4 @@ publisher.items = [
 console.log("state", state);
 console.log("fillable", fillable);
 console.log("fillableTemplate", fillableTemplate);
-console.log("secondNews", secondNews);
 console.log(Object.keys(publisher));
