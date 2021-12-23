@@ -1,6 +1,6 @@
 {
   "name": "publisherproxy",
-  "version": "2.5.5",
+  "version": "2.5.6",
   "description": "Association between a Javascript Proxy and a kind of pubsub pattern",
   "main": "dist/publisher-proxy.js",
   "type":"commonjs",
