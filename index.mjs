@@ -72,7 +72,14 @@ class CustomProxy {
     stopDynamicFilling(handler) {
         this._fillListeners_.delete(handler);
     }
-    set(newValue,lockInternalMutationsTransmission = false) {
+  set(newValue, lockInternalMutationsTransmission = false) {
+        if (
+          this._value_.hasOwnProperty("__value") &&
+          newValue.hasOwnProperty("__value") &&
+          this._value_.__value == newValue.__value
+        ) {
+          return;
+        }
         this._value_ = newValue;
         if (this._value_.hasOwnProperty("__value"))
         {
@@ -161,7 +168,6 @@ export default class Publisher extends CustomProxy {
                         return oTarget._value_;
                     }
                     const isValueComplex = isComplex(vValue);
-
                     if (!that._proxies_.has(sKey)) { that._proxies_.set(sKey, new Publisher(isValueComplex ? vValue : { __value: vValue }, that)); }
                     if (target[sKey] == vValue && isValueComplex) return;
                     target[sKey] = vValue;

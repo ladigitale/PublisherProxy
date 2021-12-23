@@ -1,8 +1,6 @@
 # PublisherProxy
 Association between a Javascript Proxy and a kind of pubsub pattern
 
-#### WARNING !!   Not used in production at the time of writing
-
 ## Installation
 
 ```shell

@@ -8,22 +8,25 @@ class CustomProxy {
         this._mutationListeners_ = new Set();
         this._fillListeners_ = new Set();
         this._templateFillListeners_ = new Set();
+        this._lockInternalMutationPublishing_ = false;
         this.parent = parentProxPub;
         this.root = this;
         while (this.root.parent) {
             this.root = this.root.parent;
         }
     }
-    _publishInternalMutation_() {
+    _publishInternalMutation_(lockInternalMutationsTransmission = false) {
 
         this._mutationListeners_.forEach(handler => handler());
+
+        // if (lockInternalMutationsTransmission) return;
         if (this.parent) {
             this.parent._publishInternalMutation_();
         }
     }
-    _publishAssignement_() {
+    _publishAssignement_(lockInternalMutationsTransmission = false) {
         this._assignListeners_.forEach(handler => handler(this._value_.__value ? this._value_.__value : this._value_));
-        this._publishInternalMutation_();
+        this._publishInternalMutation_(lockInternalMutationsTransmission);
     }
     _publishDynamicFilling_(key, value) {
         this._fillListeners_.forEach(handler => handler[key] = value);
@@ -69,15 +72,20 @@ class CustomProxy {
     stopDynamicFilling(handler) {
         this._fillListeners_.delete(handler);
     }
-    set(newValue) {
+  set(newValue, lockInternalMutationsTransmission = false) {
+        if (
+          this._value_.hasOwnProperty("__value") &&
+          newValue.hasOwnProperty("__value") &&
+          this._value_.__value == newValue.__value
+        ) {
+          return;
+        }
         this._value_ = newValue;
         if (this._value_.hasOwnProperty("__value"))
         {
-            this._publishAssignement_();
+            this._publishAssignement_(lockInternalMutationsTransmission);
             return true;
-        }    
-        let keys = this._proxies_.keys();
-        let key = null;
+        }
         Array.from(this._proxies_.keys()).forEach((key) => {
             if (!this._value_[key]) {
                 this._proxies_.delete(key);
@@ -85,8 +93,8 @@ class CustomProxy {
         })
         for (let key in this._value_) {
             let v = this._value_[key];
-            if (!this._proxies_.has(key)) { this._proxies_.set(key, new Publisher(isComplex(v) ? v : { __value: v }, this)); }
-            this._proxies_.get(key).set(isComplex(v) ? v : { __value: v });
+            if (!this._proxies_.has(key)) { this._proxies_.set(key, new Publisher(isComplex(v) ? v : { __value: v }, this),true); }
+            this._proxies_.get(key).set(isComplex(v) ? v : { __value: v }, true);
             this._publishDynamicFilling_(key, this._value_[key]);
         }
         this._publishAssignement_();
@@ -145,7 +153,8 @@ export default class Publisher extends CustomProxy {
                         "_publishAssignement_", 
                         "_proxies_",
                         "parent",
-                        "_value_"
+                        "_value_",
+                        "_lockInternalMutationPublishing_"
                     ].includes(sKey)) return that[sKey];
                     if (!that._proxies_.has(sKey)) {
                         let vValue = target[sKey];
@@ -158,7 +167,9 @@ export default class Publisher extends CustomProxy {
                         oTarget._value_ = vValue;
                         return oTarget._value_;
                     }
-                    if (!that._proxies_.has(sKey)) { that._proxies_.set(sKey, new Publisher(isComplex(vValue) ? vValue : { __value: vValue }, that)); }
+                    const isValueComplex = isComplex(vValue);
+                    if (!that._proxies_.has(sKey)) { that._proxies_.set(sKey, new Publisher(isValueComplex ? vValue : { __value: vValue }, that)); }
+                    if (target[sKey] == vValue && isValueComplex) return;
                     target[sKey] = vValue;
                     that._publishDynamicFilling_(sKey, vValue);
                     that._proxies_.get(sKey).set(isComplex(vValue) ? vValue : { __value: vValue });
@@ -174,7 +185,8 @@ export default class Publisher extends CustomProxy {
                     return target.keys();
                 },
                 "has": function (oTarget, sKey) {
-                    return sKey in target;
+                    
+                    return sKey in target && sKey != "_lockInternalMutationPublishing_";
                 },
                 "defineProperty": function (oTarget, sKey, oDesc) {
                     if (oDesc && "value" in oDesc) { target[sKey] = oDesc.value; }
