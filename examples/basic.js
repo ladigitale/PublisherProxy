@@ -38,8 +38,11 @@ publisher.startDynamicFilling(fillable);
 publisher.startTemplateFilling(fillableTemplate);
 console.log(v);
 publisher.title = "Good morning";
-publisher.items[1].text.onAssign((value) => console.log("second news new text : " + value));
+let onAssign = (value) => console.log("second news new text : " + value);
+publisher.items[1].text.onAssign(onAssign);
 publisher.items[1].text = "Second news Modified";
+publisher.items[1].text.offAssign(onAssign);
+publisher.items[1].text = "Second news Modified 2";
 publisher.items = [
     { title: "Ah Ah", text: "Welcome" },
     { title: "Hello", text: "World" }
