@@ -93,12 +93,8 @@ class CustomProxy {
         })
         for (let key in this._value_) {
             let v = this._value_[key];
-            //if (!this._proxies_.has(key)) { this._proxies_.set(key, new Publisher(isComplex(v) ? v : { __value: v }, this),true); }
-            if (this._proxies_.has(key)){
-              this._proxies_
-                .get(key)
-                .set(isComplex(v) ? v : { __value: v }, true);
-            }
+            if (!this._proxies_.has(key)) { this._proxies_.set(key, new Publisher(isComplex(v) ? v : { __value: v }, this),true); }
+            this._proxies_.get(key).set(isComplex(v) ? v : { __value: v }, true);
             this._publishDynamicFilling_(key, this._value_[key]);
         }
         this._publishAssignement_();
@@ -176,7 +172,7 @@ export default class Publisher extends CustomProxy {
                     if (target[sKey] == vValue && isValueComplex) return;
                     target[sKey] = vValue;
                     that._publishDynamicFilling_(sKey, vValue);
-                      that._proxies_.get(sKey).set(isComplex(vValue) ? vValue : { __value: vValue });
+                    that._proxies_.get(sKey).set(isComplex(vValue) ? vValue : { __value: vValue });
                     return that._proxies_.get(sKey);
                 },
                 "deleteProperty": function (oTarget, sKey) {
