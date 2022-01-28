@@ -19,7 +19,7 @@ class CustomProxy {
 
         this._mutationListeners_.forEach(handler => handler());
 
-        // if (lockInternalMutationsTransmission) return;
+        if (lockInternalMutationsTransmission) return;
         if (this.parent) {
             this.parent._publishInternalMutation_();
         }
