@@ -1,4 +1,3 @@
-console.log("HEY");
 function isComplex(value) {
   return typeof value === "object" && value != null;
 }
@@ -18,7 +17,12 @@ class CustomProxy {
     }
   }
   hasListener() {
-    return this._templateFillListeners_.size > 0 || this._assignListeners_.size > 0 || this._mutationListeners_.size > 0 || this._fillListeners_.size > 0;
+    return (
+      this._templateFillListeners_.size > 0 ||
+      this._assignListeners_.size > 0 ||
+      this._mutationListeners_.size > 0 ||
+      this._fillListeners_.size > 0
+    );
   }
   _publishInternalMutation_(lockInternalMutationsTransmission = false) {
     this._mutationListeners_.forEach((handler) => handler());
@@ -29,7 +33,9 @@ class CustomProxy {
     }
   }
   _publishAssignement_(lockInternalMutationsTransmission = false) {
-    this._assignListeners_.forEach((handler) => handler(this._value_.__value ? this._value_.__value : this._value_));
+    this._assignListeners_.forEach((handler) =>
+      handler(this._value_.__value ? this._value_.__value : this._value_)
+    );
     this._publishInternalMutation_(lockInternalMutationsTransmission);
   }
   _publishDynamicFilling_(key, value) {
@@ -80,8 +86,12 @@ class CustomProxy {
     this._fillListeners_.delete(handler);
   }
   set(newValue, lockInternalMutationsTransmission = false) {
-    if (this._value_.hasOwnProperty("__value") && newValue.hasOwnProperty("__value") && this._value_.__value == newValue.__value) {
-      return;
+    if (
+      this._value_.hasOwnProperty("__value") &&
+      newValue.hasOwnProperty("__value") &&
+      this._value_.__value == newValue.__value
+    ) {
+      return true;
     }
     this._value_ = newValue;
     if (this._value_.hasOwnProperty("__value")) {
@@ -89,12 +99,17 @@ class CustomProxy {
       return true;
     }
     Array.from(this._proxies_.keys()).forEach((key) => {
-      if (!this._value_[key] && this._proxies_.has(key) && !this._proxies_.get(key).hasListener()) {
+      // delete this._value_[key];
+      if (
+        !this._value_[key] &&
+        this._proxies_.has(key) &&
+        !this._proxies_.get(key).hasListener()
+      ) {
         this._proxies_.delete(key);
       }
     });
     for (let key in this._value_) {
-      let v = this._value_[key];
+      let v = newValue[key];
       let isVComplex = isComplex(v);
       let valueV = isVComplex ? v : { __value: v };
       if (!this._proxies_.has(key)) {
@@ -164,8 +179,14 @@ export default class Publisher extends CustomProxy {
         )
           return that[sKey];
         if (!that._proxies_.has(sKey)) {
-          let vValue = target[sKey];
-          that._proxies_.set(sKey, new Publisher(isComplex(vValue) ? vValue : { __value: vValue }, that));
+          let vValue = that._value_[sKey];
+          that._proxies_.set(
+            sKey,
+            new Publisher(
+              isComplex(vValue) ? vValue : { __value: vValue },
+              that
+            )
+          );
         }
         return that._proxies_.get(sKey);
       },
@@ -176,34 +197,41 @@ export default class Publisher extends CustomProxy {
         }
         const isValueComplex = isComplex(vValue);
         if (!that._proxies_.has(sKey)) {
-          that._proxies_.set(sKey, new Publisher(isValueComplex ? vValue : { __value: vValue }, that));
+          that._proxies_.set(
+            sKey,
+            new Publisher(isValueComplex ? vValue : { __value: vValue }, that)
+          );
         }
-        if (target[sKey] == vValue && isValueComplex) return;
-        target[sKey] = vValue;
+        if (that._value_[sKey] == vValue && isValueComplex) return vValue;
+        that._value_[sKey] = vValue;
         that._publishDynamicFilling_(sKey, vValue);
-        that._proxies_.get(sKey).set(isComplex(vValue) ? vValue : { __value: vValue });
+        that._proxies_
+          .get(sKey)
+          .set(isComplex(vValue) ? vValue : { __value: vValue });
         return that._proxies_.get(sKey);
       },
       deleteProperty: function (oTarget, sKey) {
         that._proxies_.get(sKey).set(null);
         that._publishDynamicFilling_(sKey, null);
         that._proxies_.delete(sKey);
-        return delete target[sKey];
+        return delete that._value_[sKey];
       },
       enumerate: function (oTarget, sKey) {
-        return target.keys();
+        return that._value_.keys();
       },
       has: function (oTarget, sKey) {
-        return sKey in target && sKey != "_lockInternalMutationPublishing_";
+        return (
+          sKey in that._value_ && sKey != "_lockInternalMutationPublishing_"
+        );
       },
       defineProperty: function (oTarget, sKey, oDesc) {
         if (oDesc && "value" in oDesc) {
-          target[sKey] = oDesc.value;
+          that._value_[sKey] = oDesc.value;
         }
-        return target;
+        return that._value_;
       },
       getOwnPropertyDescriptor: function (oTarget, sKey) {
-        var vValue = target[sKey];
+        var vValue = that._value_[sKey];
         return {
           enumerable: true,
           configurable: true,
@@ -217,4 +245,5 @@ export default class Publisher extends CustomProxy {
   }
 }
 
-if (typeof module != "undefined") module.exports = { Publisher: Publisher, PublisherManager: PublisherManager };
+if (typeof module != "undefined")
+  module.exports = { Publisher: Publisher, PublisherManager: PublisherManager };
