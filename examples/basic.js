@@ -23,6 +23,12 @@ const state = {
     ]
 }
 const publisher = PublisherManager.getInstance().get("HEY");
+// publisher["title"] = "Un titre";
+// console.log(publisher.get());
+// publisher.set({ a: "HEY" });
+// console.log(publisher.get());
+// publisher["title"] = "Un deuxième titre";
+// console.log(publisher.get());
 let dataPath = "items.0";
 let array = dataPath.split('.');
 
